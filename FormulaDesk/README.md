@@ -1,11 +1,10 @@
-# FormulaDesk 公式拾取
   <div align="center">
 <p align="center">
 <img src="1.png" width="480" alt="演示动图">
 <div/>
+# FormulaDesk 公式拾取
 
 FormulaDesk 是一个 Windows 桌面公式识别器。输入图片、截图、PDF 中的局部区域或手写内容，即可生成可编辑的 LaTeX。程序还支持逐页提取 PDF 文字，并将文本保存为 Markdown。依赖和模型准备好后，识别与渲染均在本机运行。
-
 
 ## 从源码运行
 
