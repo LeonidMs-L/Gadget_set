@@ -1,0 +1,15 @@
+Pillow==13.0.0
+pypdfium2==5.15.2
+pywebview==6.1
+pywin32==312
+rapid-latex-ocr==0.0.9
+rapidocr-onnxruntime==1.4.4
+requests==2.34.2
+
+# OCR and Windows WebView versions used in the verified build.
+chardet==5.2.0
+numpy==1.26.4
+onnxruntime==1.20.1
+opencv-python==4.11.0.86
+pythonnet==3.2.1
+tokenizers==0.23.3

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:">
+  <title>公式拾取</title>
+  <link rel="stylesheet" href="app.css">
+  <script defer src="math-config.js"></script>
+  <script defer src="vendor/tex-svg.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">∑</div>
+      <div><h1>公式拾取</h1><span>FORMULA DESK</span></div>
+    </div>
+    <span class="offline"><i></i> 本地识别</span>
+  </header>
+  <main>
+    <div class="workspace">
+      <section class="panel source">
+        <div class="panel-head">
+          <div><h2>识别对象</h2><p>导入公式截图，或在手写板上书写。</p></div>
+          <button id="sample" class="quiet" type="button">试用示例 ↗</button>
+        </div>
+        <div class="mode-row" aria-label="输入方式">
+          <button id="imageMode" class="tab selected" aria-pressed="true">图片 / PDF</button>
+          <button id="drawMode" class="tab" aria-pressed="false">手写板</button>
+        </div>
+        <div id="inputView" class="input-view">
+          <div id="dropZone" class="drop-zone">
+            <div class="upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 16V4m-4 4 4-4 4 4M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></svg></div>
+            <strong>拖放图片或 PDF 到此处</strong>
+            <p>也可以截图后按 <kbd>Ctrl</kbd> + <kbd>V</kbd></p>
+            <div class="actions centered"><button id="choose" class="primary">选择文件</button><button id="paste">粘贴图片</button></div>
+            <small>PNG、JPG、BMP、WebP、TIFF、PDF · 最大 50 MB</small>
+          </div>
+          <div id="loaded" class="loaded" hidden>
+            <div id="stage" class="stage">
+              <div id="imageBox" class="image-box"><img id="sourceImage" alt="待识别内容" draggable="false"><div id="selection" hidden></div></div>
+            </div>
+            <div class="file-row">
+              <span id="fileName" class="file-name"></span>
+              <div class="actions"><button id="clearCrop" class="quiet" hidden>清除选区</button><button id="zoom" class="quiet">放大选区 ↗</button><button id="change" class="quiet">更换文件</button></div>
+            </div>
+            <div id="pageNav" class="page-nav" hidden>
+              <button id="prev" aria-label="上一页">‹</button>
+              <label>第 <input id="pageNum" type="number" min="1" value="1" aria-label="页码"> 页</label>
+              <span id="pageTotal"></span>
+              <button id="next" aria-label="下一页">›</button>
+            </div>
+          </div>
+        </div>
+        <div id="drawView" class="draw-view" hidden>
+          <canvas id="pad" width="1320" height="740" aria-label="手写公式画布"></canvas>
+          <div class="file-row"><span>用鼠标或触控笔书写</span><div class="actions"><button id="undo" class="quiet">撤销</button><button id="clearPad" class="quiet">清空</button></div></div>
+        </div>
+        <div class="recognize-row">
+          <div class="recognize-options">
+            <p id="inputHint">导入图片后可框选单个公式。</p>
+            <label id="enhanceLabel" title="对公式图像锐化并提高对比度，可用于重新识别" hidden><input id="enhance" type="checkbox"> 增强对比度</label>
+          </div>
+          <button id="recognize" class="primary" disabled>开始识别 <span aria-hidden="true">→</span></button>
+        </div>
+      </section>
+      <section class="panel results">
+        <div class="panel-head">
+          <div><h2>识别结果</h2><p id="resultHint">预览公式，并直接编辑 LaTeX。</p></div>
+          <div class="mode-row compact" aria-label="识别模式">
+            <button id="formulaMode" class="tab selected" aria-pressed="true">公式</button>
+            <button id="docMode" class="tab" aria-pressed="false">文档 Markdown</button>
+          </div>
+        </div>
+        <div id="preview" class="preview" aria-live="polite">
+          <span id="previewEmpty" class="preview-empty">∑ <span>识别结果将在此预览</span></span>
+          <div id="rendered" hidden></div>
+        </div>
+        <div class="editor-head">
+          <label id="editorLabel" for="result">LaTeX 源码</label>
+          <span id="renderStatus" role="status"></span>
+        </div>
+        <textarea id="result" spellcheck="false" placeholder="识别后可在这里修改 LaTeX，也可直接输入公式。"></textarea>
+        <div class="output-actions">
+          <button id="copy" class="accent" disabled>复制 LaTeX</button>
+          <button id="mathml" title="复制 MathML，供 Word 等支持 MathML 的软件使用" disabled>复制 MathML</button>
+          <button id="png" disabled>复制 PNG</button>
+          <div class="save-wrap">
+            <button id="export" aria-expanded="false" aria-controls="saveMenu" disabled>另存为 ⌄</button>
+            <div id="saveMenu" class="menu" hidden>
+              <button data-save="latex">LaTeX (.tex)</button>
+              <button data-save="mathml">MathML (.mml)</button>
+              <button data-save="png">图片 (.png)</button>
+              <button data-save="markdown" hidden>Markdown (.md)</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <footer><span id="status" role="status"><i></i><span>就绪</span></span><span>快捷识别 <kbd>Ctrl</kbd> + <kbd>Enter</kbd></span></footer>
+  </main>
+  <dialog id="cropDialog">
+    <div class="dialog-head"><div><h2>放大选区</h2><p>拖动鼠标框住一个公式。滚动可查看其他区域。</p></div><button id="closeZoom" aria-label="关闭">关闭</button></div>
+    <div id="zoomStage" class="zoom-stage"></div>
+    <div class="dialog-actions"><button id="doneZoom" class="primary">完成框选</button></div>
+  </dialog>
+</body>
+</html>
